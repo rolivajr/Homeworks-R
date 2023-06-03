@@ -1,0 +1,117 @@
+
+Funciones en R
+
+
+ Estructura de una función
+
+ nombre_funcion <- function(argumentos) {
+    cuerpo
+    ...
+   return(resultado)
+ }
+
+ Ejemplo de función
+ 
+```{r}
+
+saludo <- function(nombre) {
+  mensaje <- paste("Hola ", nombre)
+  return(mensaje)
+}
+
+resultado_saludo <- saludo("Ricardo")
+print(resultado_saludo) 
+
+```
+
+
+ Argumentos de una función
+ 
+```{r}
+obtener_suma <- function(..., mensaje = "La suma es:") {
+  suma <- sum(...)
+  resultado <- paste(mensaje, suma)
+  return(resultado)
+}
+
+resultado_suma <- obtener_suma(2, 4, 6, mensaje = "El resultado es:")
+print(resultado_suma) 
+
+```
+ 
+
+
+
+
+Argumentos por valor
+
+```{r}
+duplicar_valor <- function(x) {
+  x <- x * 2
+  return(x)
+}
+
+valor <- 5
+nuevo_valor <- duplicar_valor(valor)
+print(nuevo_valor)
+print(valor)  
+
+```
+
+
+
+
+
+ Familia apply
+
+
+ lapply 
+ Ejemplo:  Una lista con los inversos de los números
+ 
+```{r}
+obtener_inverso <- function(x) {
+  inverso <- 1 / x
+  return(inverso)
+}
+
+lista_numeros <- list(2, 4, 6)
+inversos <- lapply(lista_numeros, obtener_inverso)
+print(inversos) 
+
+```
+ 
+
+
+ sapply 
+ Ejemplo: Un vector con las raíces cuadradas de los números
+ 
+```{r}
+
+obtener_raiz_cuadrada <- function(x) {
+  raiz <- sqrt(x)
+  return(raiz)
+}
+
+vector_numeros <- c(4, 9, 16)
+raices_cuadradas <- sapply(vector_numeros, obtener_raiz_cuadrada)
+print(raices_cuadradas) 
+
+```
+ 
+
+
+vapply
+Ejemplo: Un vector numérico con las longitudes de las palabras
+
+```{r}
+obtener_longitud <- function(texto) {
+  return(nchar(texto))
+}
+
+vector_palabras <- c("arbol", "casa", "planeta")
+longitudes <- vapply(vector_palabras, obtener_longitud, numeric(1))
+print(longitudes)  
+
+```
+
+
