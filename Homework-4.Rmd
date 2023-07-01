@@ -1,0 +1,199 @@
+ 
+ Ricardo Alexander Oliva Osorio
+ 2220128110101
+ 
+ Homework 4
+ 
+ Vamos a carga el archivo diamonds.csv este debe estar en la misma carpeta y el explorar la variable
+
+```{r}
+diamonds <- read.csv("diamonds.csv")
+
+str(diamonds)
+
+
+```
+
+
+Dispersión
+
+Gráficaa de dispersión carat vs price
+ 
+```{r}
+
+ggplot(diamonds, aes(x = carat, y = price)) +
+  geom_point()
+
+
+
+```
+ 
+
+
+ Gráfica de dispersión con estetica clarity
+ 
+```{r}
+ggplot(diamonds, aes(x = carat, y = price, color = clarity)) +
+  geom_point()
+
+```
+ Histograma
+ 
+Histograma de la variable price 
+
+
+```{r}
+
+ggplot(diamonds, aes(x = price)) +
+  geom_histogram(bins = 40)
+
+```
+
+
+
+ Histograma con escala logarítmica de base 10
+ 
+```{r}
+ggplot(diamonds, aes(x = price)) +
+  geom_histogram(bins = 40) +
+  scale_x_log10()
+
+```
+
+
+Boxplots
+
+
+Gráfico de cajas con variable cut en el eje x y price en el eje y
+
+
+```{r}
+ggplot(diamonds, aes(x = cut, y = price)) +
+  geom_boxplot() +
+  scale_y_log10()
+
+```
+
+
+
+Gráfico de cajas con colores de las cajas basados en la variable cut
+
+```{r}
+ggplot(diamonds, aes(x = cut, y = price, fill = cut)) +
+  geom_boxplot() +
+  scale_y_log10()
+```
+
+
+Faceting
+
+
+ Filtrar el data frame por price y cut
+
+```{r}
+
+
+
+
+library(dplyr)
+
+filtro_price <- diamonds %>%
+  filter(price > 1000, cut %in% c("Good", "Ideal", "Premium"))
+
+
+
+```
+
+
+
+ Gráfica de barras con x = cut, y = depth
+ 
+```{r}
+
+library(ggplot2)
+
+ggplot(filtro_price, aes(x = cut, y = depth)) +
+  geom_col()
+
+
+
+```
+ 
+
+ Faceting por la variable clarity
+ 
+```{r}
+ggplot(filtro_price, aes(x = cut, y = depth)) +
+  geom_col() +
+  facet_wrap(~ clarity)
+
+```
+ 
+
+
+ Gráfica de faceting con  clarity
+ 
+```{r}
+ 
+ggplot(filtro_price, aes(x = cut, y = depth, fill = clarity)) +
+  geom_col() +
+  facet_wrap(~ clarity)
+
+
+```
+
+
+Grouping and summarizing
+
+Agrupamiento y sumarización por la variable cut 
+
+
+```{r}
+medi_di_diamond <- diamonds %>%
+  group_by(cut) %>%
+  summarize(mediaX = mean(x),
+            mediaY = mean(y),
+            mediaZ = mean(z))
+
+print(medi_di_diamond)
+
+
+```
+
+
+
+
+
+ Filtrar por cut igual a "Premium", agrupar por clarity 
+ 
+ 
+```{r}
+
+cut_premium <- diamonds %>%
+  filter(cut == "Premium") %>%
+  group_by(clarity) %>%
+  summarize(minPrice = min(price),
+            maxPrice = max(price))
+
+print(cut_premium)
+
+
+```
+ 
+
+
+
+Gráfica de barras con x = clarity, y = maxPrice y fill = clarity
+
+
+```{r}
+
+ggplot(cut_premium, aes(x = clarity, y = maxPrice, fill = clarity)) +
+  geom_col()
+
+
+```
+
+
+
+
