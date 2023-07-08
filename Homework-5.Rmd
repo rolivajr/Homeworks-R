@@ -1,0 +1,217 @@
+
+Ricardo Alexander Oliva Osorio
+2220128110101
+
+Cargar los archivos CSV
+
+```{r}
+
+
+library(dplyr)
+
+ 
+questions <- read.csv("questions.csv")
+answers <- read.csv("answers.csv")
+tags <- read.csv("tags.csv")
+question_tags <- read.csv("question_tags.csv")
+
+
+```
+
+
+ 1. Left-joining questions and tags
+ 
+
+ 
+1.1 Relacionar questions y question_tags
+ 
+```{r}
+questions_with_tags <- left_join(questions, question_tags, by = c("id" = "question_id"))
+
+```
+ 
+
+
+ Agregar relación para la tabla tags
+
+```{r}
+
+questions_with_tags <- left_join(questions_with_tags, tags, by = c("tag_id" = "id"))
+
+```
+
+
+
+ Cambiar los NA en la columna tag_name a "only-r"
+ 
+ 
+```{r}
+
+library(tidyr)
+
+questions_with_tags <- questions_with_tags %>% 
+  mutate(tag_name = replace_na(tag_name, "only-r"))
+
+questions_with_tags
+
+```
+ 
+2. Comparing scores across tags
+Realizar el análisis en el dataframe questions_with_tags
+
+ 2.1. Utilizar group_by para la variable tag_name
+ 
+```{r}
+grouped_data <- questions_with_tags %>% 
+  group_by(tag_name)
+
+```
+ 
+
+
+ 2.2. Aplicar summarize para obtener el score promedio de cada pregunta
+ 
+```{r}
+summary_data <- grouped_data %>% 
+  summarize(mean_score = mean(score))
+
+```
+ 
+
+
+ 2.3. Ordenar mean_score en forma descendente
+ 
+```{r}
+ordered_data <- summary_data %>% 
+  arrange(desc(mean_score))
+
+ordered_data
+
+```
+ 
+
+3. Finding gaps between questions and answers
+
+3.1. Utilizar inner_join para combinar las tablas questions y answers
+
+
+```{r}
+
+str(questions)
+str(answers)
+
+combina_questions_answers <- inner_join(questions, answers, by = c("id" = "question_id"), suffix = c("_question", "_answer"))
+
+```
+
+
+ 3.2. Agregar una nueva columna llamada gap la diferencia en la fechas
+
+```{r}
+
+combina_questions_answers <- combina_questions_answers %>% 
+  mutate(
+    creation_date_answer = as.Date(creation_date_answer),
+    creation_date_question = as.Date(creation_date_question)
+  )
+
+
+combina_questions_answers_gap <- combina_questions_answers %>% 
+  mutate(gap = creation_date_answer - creation_date_question)
+
+combina_questions_answers_gap
+
+```
+
+4. Joining question and answer counts
+
+ 4.1. Contar y ordenar la columna question_id en la tabla de answers
+ 
+```{r}
+answer_counts <- answers %>% 
+  count(question_id) %>% 
+  arrange(question_id)
+
+answer_counts
+
+```
+ 
+
+
+ 4.2. Relacionar la tabla questions con answer_counts utilizando left_join
+ 
+```{r}
+
+question_answer_counts <- left_join(questions, answer_counts, by = c("id" = "question_id"))
+
+question_answer_counts
+
+```
+ 
+
+
+ 4.3. Reemplazar los valores NA en la columna n con ceros
+ 
+```{r}
+
+question_answer_counts <- question_answer_counts %>% 
+  mutate(n = replace_na(n, 0))
+
+question_answer_counts
+
+```
+ 
+ 
+
+
+
+5. Joining questions, answers, and tags
+
+
+5.1. Combinar question_tags con question_answer_counts usando inner_join
+
+
+```{r}
+
+str(question_tags)
+str(question_answer_counts)
+
+combina_tags_counts <- inner_join(question_tags, question_answer_counts, by = c("question_id" = "id"))
+
+```
+
+
+
+5.2. Utilizar otro inner_join para agregar la tabla tags
+
+```{r}
+
+str(tags)
+str(combina_tags_counts)
+
+combina_tags_counts_name <- inner_join(combined_data, tags, by = c("tag_id" = "id"))
+
+```
+
+
+
+Conteo de los temas más populares
+
+```{r}
+
+str(combina_tags_counts_name)
+
+mas_popular <- combina_tags_counts_name  %>% 
+  group_by(tag_name) %>% 
+  summarize(total_questions = n()) %>% 
+  arrange(desc(total_questions))
+
+mas_popular
+
+
+```
+
+
+
+
+
